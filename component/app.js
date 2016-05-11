@@ -8,10 +8,10 @@ const SubMenu = Menu.SubMenu;
 const MenuItemGroup = Menu.ItemGroup;
 class Nav extends Component{
 	init(){
-		
+		newactions.createNav()(Nav);
 	}
 	componentDidMount(){
-		newactions.createNav()(Nav);
+		
 	}
 	mapItem(){
 		var keys=Math.random()*15+1;
@@ -35,6 +35,7 @@ class Nav extends Component{
 		return loop(this.data.nav||[])
 	}
 	render(){
+		this.data.nav&&Other.dispatch(this.data.nav[0])
 		return <div>
 			<Menu mode="horizontal">
 				{this.mapItem()}
@@ -50,13 +51,25 @@ class Test extends Component{
 	clickHanlder(){
 		newactions.addNav()(Nav)
 	}
+	restHanlder(){
+		newactions.createNav()(Nav);
+	}
 	render(){
-		return <h1 onClick={this.clickHanlder.bind(this)}>{this.props.test}</h1>;
+		return <div>
+					<h1 onClick={this.clickHanlder.bind(this)}>{this.props.test}</h1>
+					<p onClick={this.restHanlder.bind(this)}>重置</p>
+			   </div>;
+	}
+}
+class Other extends Component{
+	render(){
+		return <p>{this.data.name}</p>
 	}
 }
 ReactDOM.render(
 	<div>
 		<Nav />
+		<Other />
 	</div>,
 	document.getElementById("container")
 )

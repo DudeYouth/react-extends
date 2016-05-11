@@ -5,8 +5,9 @@ export default class newComponent extends Component{
 		super(props);
 		this.props.listener&&event.listener(this.constructor.name,this.props.listener);
 		setStateList[this.constructor.name]=setState.bind(this);   //收集每个组件的setState方法
-		this.constructor.listener=event.listener.bind(this);   //提供监听接口，可以监听额外数据
-		this.constructor.dispatch=event.dispatch.bind(this);  //发布接口
+		this.constructor.listener=event.listener;   //提供监听接口，可以监听额外数据
+		this.constructor.dispatch=event.dispatch;  //发布接口
+		this.constructor.getData=event.getData;
 		this.init&&this.init();  //组件初始化提供接口
 		setData.call(this); //更新属性
 	}
@@ -26,7 +27,7 @@ function setData(props=this.props,state=this.state){
 }
 function setState(data){
 	var component=this.constructor.name,
-		props=event.getProps(component);
+		props=event.getData(component);
 		if(isObject(data)){
 			//更新状态
 			this.setState(props?Object.assign(props,data):data);
@@ -38,30 +39,39 @@ var event=(()=>{
 	function listener(type,data){   //监听数据
 		if(typeof type!=="string"&&isObject(type)){
 			data=type;
-			type=this.constructor.name;
+			type=this.name;
 		}
 		if(isObject(data)){
 			listenerData[type]=data;
 			updateComponents[data]?updateComponents[data].push(type):updateComponents[data]=[type];
 		}
 	}
-	var getProps=(type)=>{
-		return Object.assign({},listenerData[type]);  //获取的组件数据
+	function getData(type,status){
+		type=type||this.name;
+		if(status){
+			return Object.assign({},listenerData[type]);  //获取的组件数据
+		}else{
+			return listenerData[type];
+		}
 	}
-	function dispatch(data){   //更新状态并处理依赖,param监听一个方方法的参数
-		var type=this.constructor.name;  //组件名
+	function dispatch(data,status){   //更新状态并处理依赖,param监听一个方方法的参数,status=true开启更新依赖模式
+		var type=this.name;  //组件名
 		var components=updateComponents[listenerData[type]];   //获取使用该数据该的组件
 			if(!isObject(data)&&data!=="function"){
 				throw new Error("dispatch参数错误！");
 			}
 			if(typeof data==="function"){
-				data(this.constructor);
+				data(this);
 				return false;
 			}
 			if(!components){
 				listener(type,data);
 				components=[type];
 			}
+		if(!status){
+			setStateList[type](data);
+			return false;
+		}
 		//更新所有使用了该数据的组件
 		components.forEach((item)=>{
 			setStateList[item](data);
@@ -69,7 +79,7 @@ var event=(()=>{
 	}
 	return {
 		listener:listener,
-		getProps:getProps,
+		getData:getData,
 		dispatch:dispatch,
 	}
 })();
@@ -78,7 +88,7 @@ var isObject=(data)=>{
 }
 //包装actions
 let bindActionCreators=(action)=>(...param)=>(component)=>{
-	component.dispatch(action(event.getProps(component.name),...param));
+	component.dispatch(action(event.getData(component.name),...param));
 }
 export let bindAction=(action)=>{
 	if(typeof action=="function"){
