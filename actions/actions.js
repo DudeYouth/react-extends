@@ -1,0 +1,93 @@
+export function cut(state,data){
+	return {
+		type:"CUT",
+		content:(state.content-1)||0,
+	}
+}
+export function addNav(state){
+	state.nav.push({
+		name:"微坛02",
+		id:15,
+		children:[
+			{
+				name:"管理",
+				id:16,
+				children:[
+					{
+						name:"邦德",
+						id:17,
+					}
+				]
+			},
+			{
+				name:"管理",
+				id:18,
+				children:[
+					{
+						name:"邦德",
+						id:19,
+					},
+					{
+						name:"火种",
+						id:20,
+					}
+				]
+			}
+		]
+	})
+	return state;
+}
+export function createNav(){
+	return (component)=>{
+		setTimeout((res)=>{
+			component.dispatch({
+				nav:[{
+						name:"药联",
+						id:1,
+						children:[
+							{
+								name:"海景",
+								id:2,
+								children:[
+									{
+										name:"邦德",
+										id:3,
+									}
+								]
+							}
+						]
+					},
+					{
+						name:"微坛",
+						id:4,
+						children:[
+							{
+								name:"管理",
+								id:5,
+								children:[
+									{
+										name:"邦德",
+										id:6,
+									}
+								]
+							},
+							{
+								name:"管理",
+								id:7,
+								children:[
+									{
+										name:"邦德",
+										id:8,
+									},
+									{
+										name:"火种",
+										id:9,
+									}
+								]
+							}
+						]
+					}]
+				})
+		},1000)
+	}
+}
