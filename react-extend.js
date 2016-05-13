@@ -13,7 +13,7 @@ export default class newComponent extends Component{
 	}
 	shouldComponentUpdate(nextProps, nextState){
 		setData.call(this,nextProps,nextState);
-		return true;
+		return this.ComponentUpdate?this.ComponentUpdate(nextProps, nextState):true;
 	}
 }
 function setData(props=this.props,state=this.state){

@@ -10,9 +10,6 @@ class Nav extends Component{
 	init(){
 		newactions.createNav()(Nav);
 	}
-	componentDidMount(){
-		
-	}
 	mapItem(){
 		var keys=Math.random()*15+1;
 		var loop=(data,Node,key="")=>{
